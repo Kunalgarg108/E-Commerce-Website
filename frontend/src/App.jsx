@@ -18,9 +18,10 @@ import 'react-toastify/dist/ReactToastify.css';
 function App() {
 
   return (
+    <>
+    <Navbar/>
     <div className='px-4 py-1 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
       <ToastContainer/>
-        <Navbar/>
         <SearchBar/>
         <Routes>
           <Route path='/' element={<Home/>}/>
@@ -33,8 +34,9 @@ function App() {
           <Route path='/place-order' element={<Placeorder/>}/>
           <Route path='/orders' element={<Order/>}/>
         </Routes>
-        <Footer />
     </div>
+    <Footer />
+    </>
   )
 }
 
