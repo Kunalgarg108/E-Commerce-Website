@@ -24,9 +24,7 @@ const loginUser = async (req, res) => {
     }
 };
 const createUserToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d',
-    });
+    return jwt.sign({ id }, process.env.JWT_SECRET);
 };
 const registerUser = async (req, res) => {
     try{
@@ -79,5 +77,21 @@ const updateUserProfile = async (req, res) => {
 };
 
 const adminLogin = async (req, res) => {
+   try{
+    const { email, password } = req.body;
+    if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
+        const token = jwt.sign(email+password, process.env.JWT_SECRET);
+        res.json({success:true, token});
+    }
+    else{
+        res.json({success:false, msg:"Invalid credentials"});
+    }
+   }
+   catch(error){
+    console.log(error);
+    res.json({success:false, msg:"Internal server error"});
+   }
 };
+
+
 export { loginUser, registerUser,adminLogin,updateUserProfile };

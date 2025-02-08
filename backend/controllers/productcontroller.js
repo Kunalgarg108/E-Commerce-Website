@@ -1,3 +1,5 @@
+import cloudinary from 'cloudinary';
+import productmodel from '../models/productmodel.js';
 const addproduct = async (req, res) => {
     try{
         const { name, price, description, sizes,category,subcategory,bestseller } = req.body;
@@ -5,17 +7,32 @@ const addproduct = async (req, res) => {
         const image2 = req.files.image2 && req.files.image2[0];
         const image3 =req.files.image3 &&  req.files.image3[0];
         const image4 = req.files.image4 && req.files.image4[0];
-        // const newproduct = new productmodel({
-        //     name,
-        //     price,
-        //     description,
-        //     image,
-        //     countInStock
-        // });
-        // const product = await newproduct.save();
-        console.log("success",name, price, description, sizes,category,subcategory,bestseller );
-        console.log("success",image1, image2, image3, image4);
-        res.json({success:true, msg:"Product added successfully", product});
+        const images = [image1, image2, image3, image4].filter((item)=> item!==undefined);
+          
+        let imageUrl =await Promise.all(images.map(async (image) => {
+            let result =await cloudinary.uploader.upload(image.path,{resource_type:"image"});
+            return result.secure_url;
+        })
+    );
+
+
+    const productdata = {
+        name,
+        description,
+        price:Number(price),
+        category,
+        subcategory,
+        bestseller:Boolean !=="true"?false:true,
+        sizes:JSON.parse(sizes),
+        image:imageUrl,
+        date:Date.now()
+    };
+    console.log(productdata);
+    const product = new productmodel(productdata);
+
+    await product.save();
+    res.json({success:true, msg:"Product added successfully"});
+
     }
     catch(error){
         console.log(error);
